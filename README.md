@@ -28,3 +28,8 @@ Additional documentation of process and techniques used are noted in data-analys
 Dataset: ks-projects-201801.csv
 
 ### Summary
+
+
+### References
+
+World cloud formatting for pandas columns: https://www.geeksforgeeks.org/generating-word-cloud-python/
