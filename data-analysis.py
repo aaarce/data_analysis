@@ -4,69 +4,70 @@
 # # Kickstarter Projects Analysis
 
 # ### Motivation
-# 
+#
 # 1. What are the most successfull Kickstarter categories?
-# 
+#
 # 2. How does the size of Project's goal effect the success of a project?
-# 
+#
 # 3. What is the relationship between the size of a project and its amount of backers for both successful and failed projects?
-# 
+#
 # 4. Is it possible to build a model and predict chance of success for a project with this dataset?
-# 
+#
 
 # ##### The Data
-# 
+#
 # Dataset consisting of over 350,000 Kickstarter Projects from April 2009 to February 2018. Collected from Kaggle Datasets: https://www.kaggle.com/datasets
 
-# In[292]:
+# In[2]:
 
 
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+from wordcloud import WordCloud, STOPWORDS
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 get_ipython().run_line_magic('matplotlib', 'inline')
 
 
-# In[215]:
+# In[3]:
 
 
 df = pd.read_csv('ks-projects-201801.csv')
 
 
-# In[376]:
+# In[4]:
 
 
 print ('DataFrame Shape', df.shape)
 df.head()
 
 
-# In[217]:
+# In[5]:
 
 
 df.info()
 
 
-# In[218]:
+# In[6]:
 
 
 df.describe()
 
 
-# In[219]:
+# In[7]:
 
 
 df.nunique()
 
 
 # ### Understanding the Data & Preparation for Analysis
-# 
+#
 # Performing some data cleaning, validation, and sanity checks before performing any analysis
 
-# In[220]:
+# In[8]:
 
 
 df = df.drop(['ID', 'goal', 'pledged', 'currency', 'usd pledged'], axis=1)
@@ -76,7 +77,7 @@ df = df.drop(['ID', 'goal', 'pledged', 'currency', 'usd pledged'], axis=1)
 
 # #### Missing Data
 
-# In[221]:
+# In[9]:
 
 
 ### Checking for missing values
@@ -85,7 +86,7 @@ df.isnull().sum()
 
 # Only the 'name' column seems to have missing data. With only 4 samples here, I am going to drop these from the dataset.
 
-# In[222]:
+# In[10]:
 
 
 ##Removing missing data
@@ -94,7 +95,7 @@ df.dropna(inplace=True)
 
 # #### Dates
 
-# In[223]:
+# In[11]:
 
 
 df.sort_values('launched').head(10)
@@ -108,7 +109,7 @@ df.sort_values('launched').head(10)
 
 
 
-# In[224]:
+# In[12]:
 
 
 #Convert date columns to datetime and make time delta column (Deadline - Launched) in hours
@@ -122,7 +123,7 @@ df.loc[df['timedelta'] == 0]
 
 # It looks like there were two projects that ended within the same hour of launching. May have to calculate time delta in hours (or days) as a decimal
 
-# In[225]:
+# In[13]:
 
 
 df['timedelta'] = (df.deadline-df.launched).astype('timedelta64[m]')
@@ -130,13 +131,13 @@ df['timedelta_days'] = (df['timedelta']/60)/24
 df = df.drop('timedelta', axis=1)
 
 
-# In[226]:
+# In[14]:
 
 
 df.sort_values('timedelta_days', ascending=False).head(10)
 
 
-# In[227]:
+# In[15]:
 
 
 ###Dropping projectss with extreme timedelta's greater than 1 year
@@ -144,10 +145,10 @@ df = df.loc[df['timedelta_days'] < 366]
 
 
 # #### Outliers and Distributions
-# 
+#
 # To get a good understanding of the questions that are being asked, it may be necessary to remove projects with very small and large project goal's
 
-# In[228]:
+# In[16]:
 
 
 #### Projects with goals below $500 and more than $10,000,000
@@ -157,12 +158,24 @@ print ('Projects with more than $10M goal: ',len(df.loc[df.usd_goal_real > 10000
 
 # The distribution seems to be skewed heavily to the left, with a few extremely high project goals and many small project goals. May need to scale this data for further data visualization
 
-# In[229]:
+# In[17]:
 
 
 figsize = (18,6)
 
 def histogram_plot(dataset, column, x_label, title):
+    '''
+    Plots histogram of input feature
+
+    INPUT
+    dataset = dataset with feature that is to be plotted
+    column = feature of dataset to be plotted
+    x_label = Label title of the x axis
+    title = Plot figure title
+
+    OUTPUT
+    Distribution plot
+    '''
     plt.figure(figsize=figsize);
     plt.hist(data = dataset, x = column, bins = bins);
     plt.xscale('log');
@@ -172,7 +185,7 @@ def histogram_plot(dataset, column, x_label, title):
     plt.title(title)
 
 
-# In[230]:
+# In[18]:
 
 
 #USD PLEDGE GOAL DISTRIBUTION
@@ -186,10 +199,10 @@ histogram_plot(df, 'usd_goal_real', '$ Pledge Goal', 'Pledge Goal Distribution')
 
 
 # Data scaled with Log10 to see a much cleaner and easily understood histogram of usd pledge goals. Any modeling for prediction will require these values to be scaled.
-# 
+#
 # Projects with Pledge goals between 100 and 1,000,000 USD seem to be the appropriate sample for future modeling.
 
-# In[231]:
+# In[19]:
 
 
 # USD PLEDGED DISTRIBUTION
@@ -204,7 +217,7 @@ histogram_plot(df, 'usd_pledged_real', '$ Pledged', 'Amount Pledged Distribution
 
 # Pledge amounts seem to be slightly left skewed.
 
-# In[232]:
+# In[20]:
 
 
 ###Project Length Distribution
@@ -223,7 +236,7 @@ histogram_plot(df, 'timedelta_days', 'Length of Project in Days', 'Project Lengt
 
 # #### Further Investigation of Outliers
 
-# In[233]:
+# In[21]:
 
 
 ##High Pledge Goal Projects (2.5M USD)
@@ -232,7 +245,7 @@ df.loc[df['usd_goal_real'] > 2500000].sort_values('usd_goal_real', ascending=Fal
 
 # Once again, may need to remove these rows when training a model to possibly predict chance of success. The pledge goals are unrealistic and will hurt the gernalization of our model
 
-# In[234]:
+# In[22]:
 
 
 ##USD Pledge goal
@@ -240,22 +253,22 @@ df.loc[df['usd_pledged_real'] > 10000000].sort_values('usd_pledged_real',
                                                       ascending=False)
 
 
-# 
-# 
-# 
+#
+#
+#
 
 # #### Data Preparation Conclusion
-# 
-# Now that the data has been cleaned and validated, Some analysis can be performed to answer our questions. I will keep some of the questionable 'outlier' projects for now, but will most likely remove them when training a model in order to help genrealize better.
-# 
+#
+# Now that the data has been reviewed and cleaned up a bit. I can better answer these questions. I will keep some of the questionable 'outlier' projects for now, but may remove them when training a model in order to help generalize better.
+#
 
-#  
+#
 
 # #### Analysis - Finding Answers
-# 
+#
 # What are the most popular and/or successfull Kickstarter categories?
 
-# In[235]:
+# In[23]:
 
 
 print ('Unique Categories: ',df.category.nunique())
@@ -271,7 +284,7 @@ pd.DataFrame(data={
 
 # It seems there is a correlation between how popular a category is, and its rate of success
 
-# In[236]:
+# In[24]:
 
 
 ## State countplot by category
@@ -286,7 +299,7 @@ ax.set_title("Category Countplot");
 
 # What are the success rates of projects of different pledge goal sizes?
 
-# In[237]:
+# In[25]:
 
 
 ##Dropping projects with undefined and live states
@@ -294,7 +307,7 @@ df = df.loc[df.state != 'undefined']
 df = df.loc[df.state != 'live']
 
 
-# In[238]:
+# In[26]:
 
 
 #Creating Bin columns for project size
@@ -302,13 +315,13 @@ df['bin'] = pd.cut(df['usd_goal_real'],
                    [1, 1000, 10000, 100000, 1000000, 1000000000],
                    labels=['Less than 1000',
                            '1,000 to 10,000',
-                           '10,000 to 100,000', 
+                           '10,000 to 100,000',
                            '100,000 to 1,000,000',
                            'Greater than 1,000,000'],
                    duplicates='drop')
 
 
-# In[239]:
+# In[27]:
 
 
 ax = sns.countplot(x="bin", hue="state", data=df, palette='deep');
@@ -318,11 +331,11 @@ ax.set_title("Project Goal Size Count Plot");
 
 # At first glance, it looks like the smaller projects seem to be more successful, as expected.
 
-#  
+#
 
 # What is the average pledged by each backer for successful and failed projects?
 
-# In[240]:
+# In[28]:
 
 
 ##All Projects
@@ -331,14 +344,14 @@ ax.set(xlabel='Amount of Backers', ylabel='USD Pledged Goal Amount');
 ax.set_title("Regression Plot - Amount of Backers vs. Pledge Goal Amount");
 
 
-# In[241]:
+# In[29]:
 
 
 ###Now just with successful projects
 success = df.loc[df['state'] == 'successful']
 
 
-# In[242]:
+# In[30]:
 
 
 ax = sns.regplot(x='backers',y='usd_pledged_real', data=success)
@@ -346,14 +359,14 @@ ax.set(xlabel='Amount of Backers', ylabel='USD Pledged Goal Amount');
 ax.set_title("Successful Projects - Backers vs. USD Pledge Goal Amount");
 
 
-# In[243]:
+# In[31]:
 
 
 ###Failed
 failed = df.loc[df['state'] == 'failed']
 
 
-# In[244]:
+# In[32]:
 
 
 ax = sns.regplot(x='backers',y='usd_pledged_real', data=failed)
@@ -361,17 +374,17 @@ ax.set(xlabel='Amount of Backers', ylabel='USD Pledged Goal Amount');
 ax.set_title("Failed Projects - Backers vs. USD Pledge Goal Amount");
 
 
-#  
+#
 
 # Can we predict the success of a project?
 
-# In[363]:
+# In[33]:
 
 
 model_df = df.copy()
 
 
-# In[364]:
+# In[34]:
 
 
 ##Dropping some columns before training model
@@ -383,7 +396,7 @@ model_df = model_df.drop(['name', 'deadline', 'launched', 'backers', 'bin'], axi
 
 # Last minute data cleaning for training
 
-# In[365]:
+# In[35]:
 
 
 ##Dropping state of undefined projects, since this is going to be our target variable
@@ -392,7 +405,7 @@ model_df = model_df.loc[df['state'] != 'undefined']
 
 # Dealing with categorical variables
 
-# In[366]:
+# In[36]:
 
 
 ## Getting Dummies for state column
@@ -408,7 +421,7 @@ model_df.state.replace(['successful', 'failed', 'canceled', 'suspended'], [1, 0,
 
 # Preprocessing Data
 
-# In[367]:
+# In[37]:
 
 
 #Converting target variable to numerical values
@@ -416,16 +429,21 @@ feats = model_df.iloc[:,1:]
 target = model_df.iloc[:, 0]
 
 
-# In[368]:
+# In[38]:
 
 
 ##Splitting the data
-# X_train, X_test, y_train, y_test = train_test_split(
-# ...     X, y, test_size=0.33, random_state=42)
-
 def splitting_data(X,y):
+    '''
+    INPUT
+    X = feature data
+    y = target data
+
+    OUTPUT
+    X_train, X_test, y_train, y_test
+    '''
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state = 42)
-    
+
     return X_train, X_test, y_train, y_test
 
 X_train, X_test, y_train, y_test = splitting_data(feats, target)
@@ -437,16 +455,25 @@ X_train, X_test, y_train, y_test = splitting_data(feats, target)
 
 
 
-# In[372]:
+# In[144]:
 
 
 #Scaling Data
 
 def scale_data(train, test):
+    '''
+    INPUT
+    train = training dataset
+    test = testing dataset
+
+    OUTPUT
+    scaled_X_test = test set scaled using StandardScaler
+    scaled_X_train = train set scaled using StandardScaler
+    '''
     scaler = StandardScaler();
     scaled_X_test = scaler.fit_transform(train);
     scaled_X_train = scaler.fit_transform(test);
-    
+
     return scaled_X_test, scaled_X_train
 
 X_train, X_test = scale_data(X_train, X_test);
@@ -454,21 +481,22 @@ X_train, X_test = scale_data(X_train, X_test);
 
 # Simple Logistic Regression Model
 
-# In[370]:
+# In[40]:
 
 
+#instantiate and fit logistic regression model
 clf = LogisticRegression(solver='lbfgs', max_iter=500).fit(X_train, y_train)
 
 
 # Scoring and Prediction
 
-# In[371]:
+# In[41]:
 
 
 clf.score(X_test, y_test)
 
 
-# In[362]:
+# In[42]:
 
 
 ###Percent of successful projects
@@ -479,22 +507,75 @@ print (1-success_pct)
 
 
 # In comparison, it looks like this model is quite successful at predict the project state
-# 
+#
 # 88% percent model accuracy vs. the 'dummy prediction' of 64%
 
-# In[357]:
+# In[43]:
 
 
 #output probability
 clf.predict_proba(X_test)
 
 
-# In[378]:
+# In[112]:
 
 
-
-# In[ ]:
-
+#Create wordcloud of main_categories
 
 
+# In[113]:
 
+
+words = df['category']
+
+
+# In[133]:
+
+
+comment_words = ' '
+stopwords = set(STOPWORDS)
+
+for val in df['category']:
+
+    # typecaste each val to string
+    val = str(val)
+
+    # split the value
+    tokens = val.split()
+
+    # Converts each token into lowercase
+    for i in range(len(tokens)):
+        tokens[i] = tokens[i].lower()
+
+    for words in tokens:
+        comment_words = comment_words + words + ' '
+
+
+# Creating word cloud for main_category series of dataset
+
+# In[134]:
+
+
+wordcloud = WordCloud(
+    width = 3000,
+    height = 2000,
+    background_color = 'white',
+    stopwords = STOPWORDS).generate(str(comment_words))
+
+
+# In[135]:
+
+
+fig = plt.figure(
+    figsize = (80, 40),
+    facecolor = 'k',
+    edgecolor = 'k')
+
+
+# In[143]:
+
+
+plt.imshow(wordcloud, interpolation = 'bilinear')
+plt.axis('off')
+plt.tight_layout(pad=0)
+plt.show()
