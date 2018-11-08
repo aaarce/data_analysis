@@ -15721,7 +15721,7 @@ Unique Main Categories:  15
 <div class="prompt input_prompt">In&nbsp;[113]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">words</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">words</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;category&#39;</span>
 </pre></div>
 
     </div>
@@ -15737,20 +15737,42 @@ Unique Main Categories:  15
 <div class=" highlight hl-ipython3"><pre><span></span><span class="n">comment_words</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
 <span class="n">stopwords</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">STOPWORDS</span><span class="p">)</span> 
 
-<span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]:</span> 
+<span class="k">def</span> <span class="nf">create_wordcloud</span><span class="p">(</span><span class="n">column</span><span class="p">):</span>
+    <span class="sd">&#39;&#39;&#39;</span>
+<span class="sd">    Function for creating wordcloud of given array of strings</span>
+<span class="sd">    </span>
+<span class="sd">    INPUT</span>
+<span class="sd">    Column to create wordcloud with</span>
+<span class="sd">    </span>
+<span class="sd">    OUPUT</span>
+<span class="sd">    Wordcloud object</span>
+<span class="sd">    &#39;&#39;&#39;</span>
+    <span class="n">comment_words</span> <span class="o">=</span> <span class="s1">&#39; &#39;</span>
+    <span class="n">stopwords</span> <span class="o">=</span> <span class="nb">set</span><span class="p">(</span><span class="n">STOPWORDS</span><span class="p">)</span> 
+    
+    <span class="k">for</span> <span class="n">val</span> <span class="ow">in</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;category&#39;</span><span class="p">]:</span> 
       
-    <span class="c1"># typecaste each val to string </span>
-    <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> 
-  
-    <span class="c1"># split the value </span>
-    <span class="n">tokens</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> 
-      
-    <span class="c1"># Converts each token into lowercase </span>
-    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)):</span> 
-        <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> 
-          
-    <span class="k">for</span> <span class="n">words</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
-        <span class="n">comment_words</span> <span class="o">=</span> <span class="n">comment_words</span> <span class="o">+</span> <span class="n">words</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+    <span class="c1">#change each value to string </span>
+        <span class="n">val</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">val</span><span class="p">)</span> 
+
+        <span class="c1"># split the value </span>
+        <span class="n">tokens</span> <span class="o">=</span> <span class="n">val</span><span class="o">.</span><span class="n">split</span><span class="p">()</span> 
+
+        <span class="c1"># Converts to lowercase</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">tokens</span><span class="p">)):</span> 
+            <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">tokens</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span> 
+
+        <span class="k">for</span> <span class="n">words</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+            <span class="n">comment_words</span> <span class="o">=</span> <span class="n">comment_words</span> <span class="o">+</span> <span class="n">words</span> <span class="o">+</span> <span class="s1">&#39; &#39;</span>
+            
+            
+    <span class="n">wordcloud</span> <span class="o">=</span> <span class="n">WordCloud</span><span class="p">(</span>
+        <span class="n">width</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">,</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
+        <span class="n">background_color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">,</span>
+        <span class="n">stopwords</span> <span class="o">=</span> <span class="n">STOPWORDS</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">comment_words</span><span class="p">))</span>
+    
+    <span class="k">return</span> <span class="n">wordcloud</span>
 </pre></div>
 
     </div>
@@ -15758,24 +15780,12 @@ Unique Main Categories:  15
 </div>
 
 </div>
-<div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
-</div><div class="inner_cell">
-<div class="text_cell_render border-box-sizing rendered_html">
-<p>Creating word cloud for main_category series of dataset</p>
-
-</div>
-</div>
-</div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[134]:</div>
+<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="n">wordcloud</span> <span class="o">=</span> <span class="n">WordCloud</span><span class="p">(</span>
-    <span class="n">width</span> <span class="o">=</span> <span class="mi">3000</span><span class="p">,</span>
-    <span class="n">height</span> <span class="o">=</span> <span class="mi">2000</span><span class="p">,</span>
-    <span class="n">background_color</span> <span class="o">=</span> <span class="s1">&#39;white&#39;</span><span class="p">,</span>
-    <span class="n">stopwords</span> <span class="o">=</span> <span class="n">STOPWORDS</span><span class="p">)</span><span class="o">.</span><span class="n">generate</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">comment_words</span><span class="p">))</span>
+<div class=" highlight hl-ipython3"><pre><span></span> 
 </pre></div>
 
     </div>
@@ -15873,20 +15883,7 @@ Unique Main Categories:  15
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
-<div class="inner_cell">
-    <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span> 
-</pre></div>
-
-    </div>
-</div>
-</div>
-
-</div>
-<div class="cell border-box-sizing code_cell rendered">
-<div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[145]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>jupyter nbconvert --to html data-analysis.ipynb
@@ -15896,16 +15893,54 @@ Unique Main Categories:  15
 </div>
 </div>
 
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[NbConvertApp] Converting notebook data-analysis.ipynb to html
+[NbConvertApp] Writing 1300108 bytes to data-analysis.html
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[&nbsp;]:</div>
+<div class="prompt input_prompt">In&nbsp;[146]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">!</span>jupyter nbconvert --to script data-analysis.ipynb
 </pre></div>
 
     </div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+    <div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>[NbConvertApp] Converting notebook data-analysis.ipynb to script
+[NbConvertApp] Writing 13287 bytes to data-analysis.py
+</pre>
+</div>
+</div>
+
 </div>
 </div>
 

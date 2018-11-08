@@ -4,18 +4,18 @@
 # # Kickstarter Projects Analysis
 
 # ### Motivation
-#
+# 
 # 1. What are the most successfull Kickstarter categories?
-#
+# 
 # 2. How does the size of Project's goal effect the success of a project?
-#
+# 
 # 3. What is the relationship between the size of a project and its amount of backers for both successful and failed projects?
-#
+# 
 # 4. Is it possible to build a model and predict chance of success for a project with this dataset?
-#
+# 
 
 # ##### The Data
-#
+# 
 # Dataset consisting of over 350,000 Kickstarter Projects from April 2009 to February 2018. Collected from Kaggle Datasets: https://www.kaggle.com/datasets
 
 # In[2]:
@@ -64,7 +64,7 @@ df.nunique()
 
 
 # ### Understanding the Data & Preparation for Analysis
-#
+# 
 # Performing some data cleaning, validation, and sanity checks before performing any analysis
 
 # In[8]:
@@ -145,7 +145,7 @@ df = df.loc[df['timedelta_days'] < 366]
 
 
 # #### Outliers and Distributions
-#
+# 
 # To get a good understanding of the questions that are being asked, it may be necessary to remove projects with very small and large project goal's
 
 # In[16]:
@@ -166,13 +166,13 @@ figsize = (18,6)
 def histogram_plot(dataset, column, x_label, title):
     '''
     Plots histogram of input feature
-
+    
     INPUT
     dataset = dataset with feature that is to be plotted
     column = feature of dataset to be plotted
     x_label = Label title of the x axis
     title = Plot figure title
-
+    
     OUTPUT
     Distribution plot
     '''
@@ -199,7 +199,7 @@ histogram_plot(df, 'usd_goal_real', '$ Pledge Goal', 'Pledge Goal Distribution')
 
 
 # Data scaled with Log10 to see a much cleaner and easily understood histogram of usd pledge goals. Any modeling for prediction will require these values to be scaled.
-#
+# 
 # Projects with Pledge goals between 100 and 1,000,000 USD seem to be the appropriate sample for future modeling.
 
 # In[19]:
@@ -253,19 +253,19 @@ df.loc[df['usd_pledged_real'] > 10000000].sort_values('usd_pledged_real',
                                                       ascending=False)
 
 
-#
-#
-#
+# 
+# 
+# 
 
 # #### Data Preparation Conclusion
-#
+# 
 # Now that the data has been reviewed and cleaned up a bit. I can better answer these questions. I will keep some of the questionable 'outlier' projects for now, but may remove them when training a model in order to help generalize better.
-#
+# 
 
-#
+#  
 
 # #### Analysis - Finding Answers
-#
+# 
 # What are the most popular and/or successfull Kickstarter categories?
 
 # In[23]:
@@ -315,7 +315,7 @@ df['bin'] = pd.cut(df['usd_goal_real'],
                    [1, 1000, 10000, 100000, 1000000, 1000000000],
                    labels=['Less than 1000',
                            '1,000 to 10,000',
-                           '10,000 to 100,000',
+                           '10,000 to 100,000', 
                            '100,000 to 1,000,000',
                            'Greater than 1,000,000'],
                    duplicates='drop')
@@ -331,7 +331,7 @@ ax.set_title("Project Goal Size Count Plot");
 
 # At first glance, it looks like the smaller projects seem to be more successful, as expected.
 
-#
+#  
 
 # What is the average pledged by each backer for successful and failed projects?
 
@@ -374,7 +374,7 @@ ax.set(xlabel='Amount of Backers', ylabel='USD Pledged Goal Amount');
 ax.set_title("Failed Projects - Backers vs. USD Pledge Goal Amount");
 
 
-#
+#  
 
 # Can we predict the success of a project?
 
@@ -438,12 +438,12 @@ def splitting_data(X,y):
     INPUT
     X = feature data
     y = target data
-
+    
     OUTPUT
     X_train, X_test, y_train, y_test
     '''
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state = 42)
-
+    
     return X_train, X_test, y_train, y_test
 
 X_train, X_test, y_train, y_test = splitting_data(feats, target)
@@ -465,7 +465,7 @@ def scale_data(train, test):
     INPUT
     train = training dataset
     test = testing dataset
-
+    
     OUTPUT
     scaled_X_test = test set scaled using StandardScaler
     scaled_X_train = train set scaled using StandardScaler
@@ -473,7 +473,7 @@ def scale_data(train, test):
     scaler = StandardScaler();
     scaled_X_test = scaler.fit_transform(train);
     scaled_X_train = scaler.fit_transform(test);
-
+    
     return scaled_X_test, scaled_X_train
 
 X_train, X_test = scale_data(X_train, X_test);
@@ -507,7 +507,7 @@ print (1-success_pct)
 
 
 # In comparison, it looks like this model is quite successful at predict the project state
-#
+# 
 # 88% percent model accuracy vs. the 'dummy prediction' of 64%
 
 # In[43]:
@@ -526,41 +526,57 @@ clf.predict_proba(X_test)
 # In[113]:
 
 
-words = df['category']
+words = df['category'
 
 
 # In[133]:
 
 
 comment_words = ' '
-stopwords = set(STOPWORDS)
+stopwords = set(STOPWORDS) 
 
-for val in df['category']:
+def create_wordcloud(column):
+    '''
+    Function for creating wordcloud of given array of strings
+    
+    INPUT
+    Column to create wordcloud with
+    
+    OUPUT
+    Wordcloud object
+    '''
+    comment_words = ' '
+    stopwords = set(STOPWORDS) 
+    
+    for val in df['category']: 
+      
+    #change each value to string 
+        val = str(val) 
 
-    # typecaste each val to string
-    val = str(val)
+        # split the value 
+        tokens = val.split() 
 
-    # split the value
-    tokens = val.split()
+        # Converts to lowercase
+        for i in range(len(tokens)): 
+            tokens[i] = tokens[i].lower() 
 
-    # Converts each token into lowercase
-    for i in range(len(tokens)):
-        tokens[i] = tokens[i].lower()
+        for words in tokens:
+            comment_words = comment_words + words + ' '
+            
+            
+    wordcloud = WordCloud(
+        width = 3000,
+        height = 2000,
+        background_color = 'white',
+        stopwords = STOPWORDS).generate(str(comment_words))
+    
+    return wordcloud
 
-    for words in tokens:
-        comment_words = comment_words + words + ' '
+
+# In[ ]:
 
 
-# Creating word cloud for main_category series of dataset
 
-# In[134]:
-
-
-wordcloud = WordCloud(
-    width = 3000,
-    height = 2000,
-    background_color = 'white',
-    stopwords = STOPWORDS).generate(str(comment_words))
 
 
 # In[135]:
@@ -579,3 +595,23 @@ plt.imshow(wordcloud, interpolation = 'bilinear')
 plt.axis('off')
 plt.tight_layout(pad=0)
 plt.show()
+plt.savefig('docs/images/word_cloud_categories.png')
+
+
+# In[145]:
+
+
+get_ipython().system('jupyter nbconvert --to html data-analysis.ipynb')
+
+
+# In[146]:
+
+
+get_ipython().system('jupyter nbconvert --to script data-analysis.ipynb')
+
+
+# In[ ]:
+
+
+
+
