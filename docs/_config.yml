@@ -1,2 +1,5 @@
 theme: jekyll-theme-slate
 title: Crowdfunded Learning
+
+baseurl: "/kickstarter-data-analysis"
+url: "https://prussell21.github.io"
