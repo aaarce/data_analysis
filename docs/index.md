@@ -1,4 +1,4 @@
-<img src="/docs/images/wordcloud.png">
+![wordcloud](/docs/images/wordcloud.png)
 
 ## Know Your Crowd
 
@@ -28,7 +28,7 @@ in hopes of answering a few questions about the Kickstarter platform and the kin
 
 **What are the most successful Kickstarter project categories?**
 
-<img src="/docs/images/category_count_plot.png">
+![category counts](/docs/images/category_count_plot.png)
 
 It appears regardless of category, most projects do not end in success. Film & Video, Music, Publishing, Games are visually the most popular.
 
