@@ -1,6 +1,6 @@
 theme: jekyll-theme-cayman
 title: Crowdfunded Learning
-description: 
+description: Data Analysis of Kickstarter Projects
 
 baseurl: "/kickstarter-data-analysis"
 url: "https://prussell21.github.io"
