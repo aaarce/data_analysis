@@ -27,9 +27,16 @@ Additional documentation of process and techniques used are noted in data-analys
 
 Dataset: ks-projects-201801.csv
 
+Docs: Contains markdown for blog post, and images from data analysis
+
+Post: https://prussell21.github.io/kickstarter-data-analysis/
+
 ### Summary
 
+The logistic regression model used to perform predictions on the kickstarter dataset, performed quite well. It produced an accuracy of 88.5% versus the 63.9% "Most Frequent" dummy benchmark.
 
-### References
+### Acknowledgements
 
-World cloud formatting for pandas columns: https://www.geeksforgeeks.org/generating-word-cloud-python/
+https://www.geeksforgeeks.org/generating-word-cloud-python/
+
+https://www.kaggle.com/datasets
