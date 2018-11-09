@@ -1,4 +1,4 @@
-![wordcloud](/docs/images/wordcloud.png)
+<img src="https://raw.githubusercontent.com/prussell21/kickstarter-data-analysis/master/docs/images/wordcloud.png">
 
 ## Know Your Crowd
 
@@ -28,7 +28,7 @@ in hopes of answering a few questions about the Kickstarter platform and the kin
 
 **What are the most successful Kickstarter project categories?**
 
-![category counts](/docs/images/category_count_plot.png)
+<img src="https://github.com/prussell21/kickstarter-data-analysis/blob/master/docs/images/category_count_plot.png?raw=true">
 
 It appears regardless of category, most projects do not end in success. Film & Video, Music, Publishing, Games are visually the most popular.
 
@@ -51,13 +51,13 @@ There seems to be a somewhat of a linear relationship between the popularity of 
 
 **How does the size of project's goal effect it's chance of success?**
 
-<img src="/docs/images/project_goal_size.png">
+<img src="https://github.com/prussell21/kickstarter-data-analysis/blob/master/docs/images/project_goal_size.png?raw=true">
 
 The most common projects are started with a goal size of $1,000 to $10,000. However, as expected the projects that have a goal size of less than $1,000 have the greatest chance for success.
 
 **What is the relationship between the size of a project and its amount of backers for both successful and unsuccessful projects?**
 
-<img src="/docs/images/backers_vs_goal_amount.png">
+<img src="https://github.com/prussell21/kickstarter-data-analysis/blob/master/docs/images/backers_vs_goal_amount.png?raw=true">
 
 It appears, there is a slight positive correlation between the size of a project's goal and the amount of backers who contribute. However, the vast majority of projects receive less than 25,000 backers.
 
